@@ -91,7 +91,7 @@ export function ReelHero() {
       finishIntro.current = end;
       iv.addEventListener('ended', end);
       iv.addEventListener('error', end);
-      timer = window.setTimeout(end, 16000); // never trap a visitor if the video cannot play
+      timer = window.setTimeout(end, 18000); // never trap a visitor if the video cannot play
     }
 
     return () => {

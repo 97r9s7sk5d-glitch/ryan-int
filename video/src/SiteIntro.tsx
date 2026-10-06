@@ -16,13 +16,15 @@ const CLIPS = [
   {file: 'hampstead', eyebrow: 'Hampstead, North London', title: 'Shaker, in a bold blue'},
   {file: 'barnes', eyebrow: 'Barnes, South London', title: 'Sleek, minimal, strong colour'},
   {file: 'library', eyebrow: 'Hampstead Way, London', title: 'The brass library'},
+  {file: 'hovingham', eyebrow: 'Hovingham, North Yorkshire', title: 'An Aga, framed'},
   {file: 'banquette', eyebrow: 'Furniture', title: 'Banquette seating'},
+  {file: 'malton', eyebrow: 'Malton, North Yorkshire', title: 'Hand-painted, bi-fold bright'},
   {file: 'bedroom', eyebrow: 'Bedrooms', title: 'Fitted wardrobes'},
 ];
 
-const LOGO = s(1.3);
-const CLIP = s(2);
-const OVERLAP = 7;
+const LOGO = s(1.2);
+const CLIP = s(1.8);
+const OVERLAP = 6;
 const TRIM = s(0.4); // skip the first moments of each clip so the move is already under way
 const clipFrom = (i: number) => LOGO - OVERLAP + i * (CLIP - OVERLAP);
 export const INTRO_FRAMES = clipFrom(CLIPS.length - 1) + CLIP;
