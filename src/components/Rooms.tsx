@@ -33,6 +33,7 @@ export function Rooms() {
                 src={full(room.hero)}
                 alt={`${room.singular} by Ryan McGinty Interiors`}
                 loading="lazy"
+                data-parallax
                 className="grade absolute inset-0 h-full w-full object-cover transition-transform duration-[1800ms] ease-[var(--ease-lux)] group-hover:scale-[1.07]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/10 to-ink/25" />

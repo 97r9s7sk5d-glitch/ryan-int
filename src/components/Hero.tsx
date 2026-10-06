@@ -40,7 +40,7 @@ export function Hero({poster}: {poster: string}) {
 
       <div className="wrap pointer-events-none relative z-10 flex h-full flex-col justify-end pb-14 sm:pb-20">
         <p data-fade className="eyebrow mb-6">Step inside the showroom</p>
-        <h2 className="display max-w-5xl text-[clamp(3.2rem,8.2vw,8rem)]">
+        <h2 data-nosplit className="display max-w-5xl text-[clamp(3.2rem,8.2vw,8rem)]">
           <span className="block overflow-hidden"><span data-line className="block">Every finish,</span></span>
           <span className="block overflow-hidden"><span data-line className="block italic text-brass-hi">chosen with you.</span></span>
         </h2>

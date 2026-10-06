@@ -90,3 +90,18 @@ body {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* Scroll-reveal headings: words slide up out of a mask */
+.w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0 0.07em 0.14em 0; margin: 0 -0.07em -0.14em 0; }
+.wi { display: inline-block; will-change: transform; }
+
+/* Landing reel: contained on the page, covering the screen during the first-visit intro */
+#reel-hero { object-fit: contain; }
+.intro-skip { display: none; }
+html[data-intro='1'] { overflow: hidden; animation: introReleaseHtml 0.01s 14s forwards; }
+html[data-intro='1'] #reel-hero { object-fit: cover; }
+html[data-intro='1'] #reel-stage { position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 90; animation: introReleaseStage 0.01s 14s forwards; }
+html[data-intro='1'] .intro-skip { display: block; }
+/* failsafe: if scripts never finish the intro, hand the page back after 14s */
+@keyframes introReleaseHtml { to { overflow: auto; } }
+@keyframes introReleaseStage { to { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: auto; } }

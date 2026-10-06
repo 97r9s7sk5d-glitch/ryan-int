@@ -27,7 +27,7 @@ export function Featured() {
             <Reveal key={f.src} delay={(i % 3) * 0.08} className={`group relative aspect-[4/3] overflow-hidden bg-black/10 ${LAYOUT[i]}`}>
               <Link href="/gallery" aria-label={`${f.room} — ${f.label}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={full(f.src)} alt={`${f.room}, ${f.label}`} loading="lazy" className="grade absolute inset-0 h-full w-full object-cover transition-transform duration-[1800ms] ease-[var(--ease-lux)] group-hover:scale-105" />
+                <img src={full(f.src)} alt={`${f.room}, ${f.label}`} loading="lazy" data-parallax className="grade absolute inset-0 h-full w-full object-cover transition-transform duration-[1800ms] ease-[var(--ease-lux)] group-hover:scale-105" />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/80 to-transparent p-5 pt-16 text-ivory">
                   <p className="text-[0.66rem] uppercase tracking-[0.28em] text-brass-hi">{f.room}</p>
                   <p className="display text-3xl">{f.label}</p>

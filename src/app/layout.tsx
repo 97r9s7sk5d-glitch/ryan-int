@@ -4,6 +4,8 @@ import './globals.css';
 import {Header} from '@/components/Header';
 import {Footer} from '@/components/Footer';
 import {SmoothScroll} from '@/components/SmoothScroll';
+import {ScrollEffects} from '@/components/ScrollEffects';
+import {ScrollProgress} from '@/components/ScrollProgress';
 import {SITE} from '@/lib/site';
 
 const description =
@@ -54,10 +56,15 @@ const jsonLd = {
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="en-GB">
+    <html lang="en-GB" suppressHydrationWarning>
+      <head>
+        {/* first visit of a session, on the home page: flag it before paint so the reel opens full screen with no flash */}
+        <script dangerouslySetInnerHTML={{__html: "try{if(location.pathname==='/'&&!sessionStorage.getItem('rm-intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.setAttribute('data-intro','1')}catch(e){}"}} />
+      </head>
       <body className="grain">
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />
         <SmoothScroll />
+        <ScrollProgress />
         <aside aria-label="Website credit" className="pointer-events-none absolute inset-x-0 top-0 z-[85]">
           <div className="wrap">
             <a href="https://thechairman.org.uk" target="_blank" rel="noopener" className="pointer-events-auto inline-block rounded-b-lg bg-black px-3 py-1 text-[11px] leading-5 text-[#c0c0c0] transition-colors hover:text-white">
@@ -68,7 +75,11 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         </aside>
         <Header />
         <main>
-          <Suspense>{children}</Suspense>
+          <Suspense>
+            {children}
+            {/* after the page content, so the DOM is hydrated before headings are split into words */}
+            <ScrollEffects />
+          </Suspense>
         </main>
         <Footer />
       </body>
