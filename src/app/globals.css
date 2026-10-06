@@ -99,7 +99,8 @@ body {
 #reel-hero { object-fit: contain; }
 .intro-skip { display: none; }
 html[data-intro='1'] { overflow: hidden; animation: introReleaseHtml 0.01s 14s forwards; }
-html[data-intro='1'] #reel-hero { object-fit: cover; }
+#intro-vid { object-fit: cover; }
+@media (max-width: 767px) { #intro-vid { object-fit: contain; } }
 html[data-intro='1'] #reel-stage { position: fixed; top: 0; left: 0; width: 100vw; height: 100svh; z-index: 90; animation: introReleaseStage 0.01s 14s forwards; }
 html[data-intro='1'] .intro-skip { display: block; }
 /* failsafe: if scripts never finish the intro, hand the page back after 14s */

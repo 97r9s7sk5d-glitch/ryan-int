@@ -5,19 +5,23 @@ import {useEffect, useRef, useState} from 'react';
 import gsap from 'gsap';
 
 const ARIA = 'Ryan McGinty Interiors brand reel: kitchens, libraries and furniture, handmade in Malton';
-/** The opening logo + headline end here; the intro hands over to the page at this point in the reel. */
-const INTRO_UNTIL = 6.4;
-
-/** Picks the phone or desktop file and starts it. Used by the inline script below and, after client-side navigation, by the effect. */
-const PICK = `function(v){if(!v||v.querySelector('source'))return;var k=matchMedia('(max-width:767px)').matches?'portrait':'wide';v.poster='/video/site-'+k+'.jpg';['mp4','webm'].forEach(function(e){var s=document.createElement('source');s.src='/video/site-'+k+'.'+e;s.type='video/'+e;v.appendChild(s)});v.load();var p=v.play();if(p&&p.catch)p.catch(function(){})}`;
-
-// The <video> is plain HTML with an inline script right after it. The script runs while the page is still being parsed,
-// so the correct file starts downloading and playing before React has hydrated.
-const VIDEO_HTML = `<video id="reel-hero" class="absolute inset-0 h-full w-full" autoplay muted loop playsinline preload="auto" aria-label="${ARIA}"></video><script>(${PICK})(document.getElementById('reel-hero'))</script>`;
+/** Where in the reel the page picks up after the intro (the headline scene; the intro already showed the logo). */
+const RESUME_AT = 2.5;
 
 /**
- * Landing. First visit of a session: the reel fills the screen for its opening (logo + headline), then shrinks into
- * its place on the page while the site opens around it. Afterwards (or on any later visit) it simply plays in place.
+ * v = the landing reel, i = the first-visit intro video. Picks the phone or desktop files and starts them.
+ * Used by the inline script below (runs while the page parses) and, after client-side navigation, by the effect.
+ */
+const PICK = `function(v,i){var h=document.documentElement,k=matchMedia('(max-width:767px)').matches?'portrait':'wide',intro=h.getAttribute('data-intro')==='1';function src(el,n){['mp4','webm'].forEach(function(e){var s=document.createElement('source');s.src='/video/'+n+'-'+k+'.'+e;s.type='video/'+e;el.appendChild(s)});el.poster='/video/'+n+'-'+k+'.jpg';el.load()}if(v&&!v.querySelector('source')){if(intro){v.removeAttribute('autoplay');v.pause()}src(v,'site');if(intro){v.addEventListener('loadedmetadata',function(){try{v.currentTime=${RESUME_AT}}catch(e){}})}else{var p=v.play();if(p&&p.catch)p.catch(function(){})}}if(i){if(intro&&!i.querySelector('source')){src(i,'intro');var q=i.play();if(q&&q.catch)q.catch(function(){})}else if(!intro){i.remove()}}}`;
+
+// The videos are plain HTML with an inline script right after them. The script runs while the page is still being parsed,
+// so the correct files start downloading and playing before React has hydrated.
+const VIDEO_HTML = `<video id="reel-hero" class="absolute inset-0 h-full w-full" ${'loop'} muted playsinline preload="auto" autoplay aria-label="${ARIA}"></video><video id="intro-vid" class="absolute inset-0 h-full w-full" muted playsinline preload="auto" aria-hidden="true"></video><script>(${PICK})(document.getElementById('reel-hero'),document.getElementById('intro-vid'))</script>`;
+
+/**
+ * Landing. First visit of a session: an opening sequence (logo + camera moves through Ryan's rooms) fills the screen,
+ * then shrinks into the reel's place on the page while the reel picks up at its headline. Afterwards, or on any later
+ * visit, the reel just plays in place.
  */
 export function ReelHero() {
   const holder = useRef<HTMLDivElement>(null);
@@ -28,13 +32,13 @@ export function ReelHero() {
 
   useEffect(() => {
     const el = box.current;
-    const v = el?.querySelector('video');
+    const v = el?.querySelector<HTMLVideoElement>('#reel-hero');
     const html = document.documentElement;
     if (!el || !v) return;
-    // after a client-side navigation the inline script does not run; start the video here instead
-    (new Function(`(${PICK})(arguments[0])`) as (v: HTMLVideoElement) => void)(v);
+    // after a client-side navigation the inline script does not run; start the reel here instead
+    (new Function(`(${PICK})(arguments[0],null)`) as (v: HTMLVideoElement) => void)(v);
 
-    const sync = () => setPaused(v.paused);
+    const sync = () => setPaused(v.paused && html.dataset.intro !== '1');
     v.addEventListener('play', sync);
     v.addEventListener('pause', sync);
     sync();
@@ -54,7 +58,8 @@ export function ReelHero() {
     // ---- first-visit intro ----
     let timer = 0;
     let done = false;
-    if (html.dataset.intro === '1') {
+    const iv = el.querySelector<HTMLVideoElement>('#intro-vid');
+    if (html.dataset.intro === '1' && iv) {
       window.__lenis?.stop();
       const end = () => {
         if (done) return;
@@ -67,18 +72,26 @@ export function ReelHero() {
           html.removeAttribute('data-intro');
           html.style.overflow = '';
           window.__lenis?.start();
+          setPaused(v.paused);
           try {
             sessionStorage.setItem('rm-intro', '1');
           } catch {}
         };
+        // hand over: the reel picks up at its headline while the opening fades away
+        try {
+          v.currentTime = RESUME_AT;
+        } catch {}
+        v.play().catch(() => {});
+        gsap.to(iv, {opacity: 0, duration: 0.9, delay: 0.2, ease: 'power2.out', onComplete: () => iv.remove()});
         if (!s || !h) return release();
         const r = h.getBoundingClientRect();
         // the stage is position:fixed (CSS); animate its box back to where the page keeps the reel
         gsap.to(s, {top: r.top, left: r.left, width: r.width, height: r.height, duration: 1.3, ease: 'expo.inOut', onComplete: release});
       };
       finishIntro.current = end;
-      v.addEventListener('timeupdate', () => v.currentTime >= INTRO_UNTIL && end());
-      timer = window.setTimeout(end, 9000); // never trap a visitor if the video cannot play
+      iv.addEventListener('ended', end);
+      iv.addEventListener('error', end);
+      timer = window.setTimeout(end, 16000); // never trap a visitor if the video cannot play
     }
 
     return () => {
@@ -108,7 +121,7 @@ export function ReelHero() {
           {/* only appears if the browser blocks autoplay (e.g. phone in low-power mode) */}
           {paused && (
             <button
-              onClick={() => box.current?.querySelector('video')?.play().catch(() => {})}
+              onClick={() => box.current?.querySelector<HTMLVideoElement>('#reel-hero')?.play().catch(() => {})}
               aria-label="Play the reel"
               className="group absolute inset-0 grid place-items-center"
             >
