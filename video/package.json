@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    "render": "remotion render src/index.ts Intro out/intro.mp4 --browser-executable=/opt/pw-browsers/chromium-1194/chrome-linux/chrome --chrome-mode=chrome-for-testing --gl=swangle"
+    "render": "remotion render src/index.ts BrandReel renders/ryan-mcginty-brand-reel-9x16.mp4 --browser-executable=${CHROME_PATH:-/opt/pw-browsers/chromium-1194/chrome-linux/chrome} --chrome-mode=chrome-for-testing --gl=swangle",
+    "render:wide": "remotion render src/index.ts BrandReelWide renders/ryan-mcginty-brand-reel-16x9.mp4 --browser-executable=${CHROME_PATH:-/opt/pw-browsers/chromium-1194/chrome-linux/chrome} --chrome-mode=chrome-for-testing --gl=swangle"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.533",
