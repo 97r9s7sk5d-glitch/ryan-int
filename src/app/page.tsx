@@ -1,6 +1,7 @@
 import {Hero} from '@/components/Hero';
 import {Marquee} from '@/components/Marquee';
 import {Intro} from '@/components/Intro';
+import {ReelSection} from '@/components/ReelSection';
 import {Rooms} from '@/components/Rooms';
 import {Configurator} from '@/components/Configurator';
 import {Process} from '@/components/Process';
@@ -18,6 +19,7 @@ export default function Home() {
       <Hero poster={roomImages.hero} />
       <Marquee />
       <Intro />
+      <ReelSection />
       <Rooms />
       <Configurator />
       <Process />

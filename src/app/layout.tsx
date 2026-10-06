@@ -58,6 +58,14 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
       <body className="grain">
         <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />
         <SmoothScroll />
+        <aside aria-label="Website credit" className="pointer-events-none absolute inset-x-0 top-0 z-[85]">
+          <div className="wrap">
+            <a href="https://thechairman.org.uk" target="_blank" rel="noopener" className="pointer-events-auto inline-block rounded-b-lg bg-black px-3 py-1 text-[11px] leading-5 text-[#c0c0c0] transition-colors hover:text-white">
+              Website designed by <span className="font-semibold">The Chairman</span>
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </div>
+        </aside>
         <Header />
         <main>
           <Suspense>{children}</Suspense>

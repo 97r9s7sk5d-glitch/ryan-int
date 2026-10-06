@@ -68,7 +68,7 @@ export function Header() {
     <>
       <header
         className={`fixed inset-x-0 top-0 z-[80] transition-all duration-700 ${
-          solid && !open ? 'bg-ink/75 backdrop-blur-xl border-b border-line py-3' : 'py-5 sm:py-7'
+          solid && !open ? 'bg-ink/75 backdrop-blur-xl border-b border-line py-3' : 'pt-9 pb-5 sm:pt-10 sm:pb-7'
         }`}
       >
         <div className="wrap flex items-center justify-between">
