@@ -14,7 +14,7 @@ export default function GalleryPage() {
   return (
     <>
       <PageHero eyebrow="Gallery" title="Our work," em="in detail.">
-        <p>View our ever expanding photo galleries showcasing our work. {GALLERY.length} photographs of kitchens, bedrooms, bathrooms, studies and furniture.</p>
+        <p>Five chapters, {GALLERY.length} photographs: kitchens, bedrooms, bathrooms, studies and furniture, made by hand in Malton and fitted in homes from Yorkshire to London.</p>
       </PageHero>
       <section className="bg-ink pb-28">
         <div className="wrap"><Gallery /></div>

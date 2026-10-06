@@ -3,9 +3,12 @@ import manifest from './manifest.json';
 type Group = keyof typeof manifest.groups;
 const G = manifest.groups as Record<string, string[]>;
 const SIZES = manifest.sizes as unknown as Record<string, [number, number]>;
+const COLORS = (manifest as unknown as {colors: Record<string, string>}).colors;
 
 export const full = (slug: string) => `/images/${slug}.webp`;
 export const thumb = (slug: string) => `/images/t/${slug}.webp`;
+/** Average colour of a photo — used as the placeholder while it loads. */
+export const bg = (slug: string) => COLORS[slug] ?? '#1b1c1e';
 export const dims = (slug: string): [number, number] => SIZES[slug] ?? [1600, 1067];
 const pick = (g: Group | string, ...idx: number[]) => idx.map((i) => G[g][i]).filter(Boolean);
 
@@ -289,3 +292,10 @@ export const roomImages = {
   craft: G.about[1],
   workshop: G.about[0],
 };
+
+/** Project captions for photos that belong to a case study (title + place). */
+export const CAPTIONS: Record<string, {title: string; place: string}> = (() => {
+  const out: Record<string, {title: string; place: string}> = {};
+  for (const r of Object.values(ROOMS)) for (const c of r.cases) for (const img of c.images) out[img] ??= {title: c.title, place: c.place};
+  return out;
+})();
