@@ -1,3 +1,4 @@
+import {createContext, useContext} from 'react';
 import {AbsoluteFill, Easing, Img, Sequence, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {C, DISPLAY, SANS} from './theme';
 import {loadFonts} from './fonts';
@@ -43,9 +44,10 @@ function Rise({children, delay = 0, style}: {children: React.ReactNode; delay?: 
   return <div style={{opacity: p, transform: `translateY(${(1 - p) * 40}px)`, ...style}}>{children}</div>;
 }
 
-const Mark = () => (
-  <Img src={staticFile('rm-mark-white.png')} style={{position: 'absolute', top: 70, left: 70, width: 150, opacity: 0.95}} />
-);
+// The website already shows the logo in its header, so the site renders switch the corner mark off.
+const ShowMark = createContext(true);
+const Mark = () =>
+  useContext(ShowMark) ? <Img src={staticFile('rm-mark-white.png')} style={{position: 'absolute', top: 70, left: 70, width: 150, opacity: 0.95}} /> : null;
 
 /** A photograph with a slow push-in, caption underneath (portrait) or lower-left (wide). */
 function PhotoScene({card}: {card: Card}) {
@@ -221,7 +223,8 @@ const T = {
 } as const;
 export const REEL_FRAMES = s(30);
 
-export const BrandReel: React.FC = () => (
+export const BrandReel: React.FC<{mark?: boolean}> = ({mark = true}) => (
+  <ShowMark.Provider value={mark}>
   <AbsoluteFill style={{background: C.ink}}>
     <Sequence from={T.intro[0]} durationInFrames={T.intro[1]}><Intro /></Sequence>
     <Sequence from={T.headline[0]} durationInFrames={T.headline[1]}><Headline /></Sequence>
@@ -232,4 +235,5 @@ export const BrandReel: React.FC = () => (
     <Sequence from={T.quote[0]} durationInFrames={T.quote[1]}><Quote /></Sequence>
     <Sequence from={T.outro[0]} durationInFrames={T.outro[1]}><Outro /></Sequence>
   </AbsoluteFill>
+  </ShowMark.Provider>
 );

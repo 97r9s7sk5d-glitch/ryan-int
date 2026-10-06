@@ -1,7 +1,7 @@
+import {ReelHero} from '@/components/ReelHero';
 import {Hero} from '@/components/Hero';
 import {Marquee} from '@/components/Marquee';
 import {Intro} from '@/components/Intro';
-import {ReelSection} from '@/components/ReelSection';
 import {Rooms} from '@/components/Rooms';
 import {Configurator} from '@/components/Configurator';
 import {Process} from '@/components/Process';
@@ -16,10 +16,10 @@ export const revalidate = 3600; // refresh the Instagram feed hourly when it is 
 export default function Home() {
   return (
     <>
-      <Hero poster={roomImages.hero} />
+      <ReelHero />
       <Marquee />
       <Intro />
-      <ReelSection />
+      <Hero poster={roomImages.hero} />
       <Rooms />
       <Configurator />
       <Process />

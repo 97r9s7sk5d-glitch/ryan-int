@@ -23,7 +23,7 @@ export function Hero({poster}: {poster: string}) {
   }, []);
 
   return (
-    <section ref={root} className="relative h-[100svh] min-h-[640px] w-full overflow-hidden bg-ink">
+    <section ref={root} id="showroom" className="relative h-[92svh] min-h-[620px] w-full overflow-hidden bg-ink">
       {/* poster: real photography until WebGL is ready (and as the no-WebGL fallback) */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -39,17 +39,17 @@ export function Hero({poster}: {poster: string}) {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink via-ink/60 to-transparent" />
 
       <div className="wrap pointer-events-none relative z-10 flex h-full flex-col justify-end pb-14 sm:pb-20">
-        <p data-fade className="eyebrow mb-6">Bespoke kitchens · Bedrooms · Libraries · Furniture</p>
-        <h1 className="display max-w-5xl text-[clamp(3.2rem,8.2vw,8rem)]">
-          <span className="block overflow-hidden"><span data-line className="block">Bespoke, beautiful</span></span>
-          <span className="block overflow-hidden"><span data-line className="block italic text-brass-hi">craftsmanship.</span></span>
-        </h1>
+        <p data-fade className="eyebrow mb-6">Step inside the showroom</p>
+        <h2 className="display max-w-5xl text-[clamp(3.2rem,8.2vw,8rem)]">
+          <span className="block overflow-hidden"><span data-line className="block">Every finish,</span></span>
+          <span className="block overflow-hidden"><span data-line className="block italic text-brass-hi">chosen with you.</span></span>
+        </h2>
         <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div data-fade className="max-w-md">
-            <p className="text-lg text-ivory/85">Get that first class finish from professionals who are leaders in their field.</p>
+            <p className="text-lg text-ivory/85">Hand-painted shaker, marble and oak, watch the room change, then design your own below.</p>
             <div className="pointer-events-auto mt-7 flex flex-wrap gap-4">
-              <Link href="/gallery" className="btn btn-solid">View our work</Link>
-              <a href="#design" className="btn">Design yours</a>
+              <a href="#design" className="btn btn-solid">Design yours</a>
+              <Link href="/gallery" className="btn">View our work</Link>
             </div>
           </div>
           <div data-fade className="hidden items-center gap-5 text-[0.68rem] uppercase tracking-[0.28em] text-ivory/70 sm:flex">
@@ -58,7 +58,7 @@ export function Hero({poster}: {poster: string}) {
           </div>
         </div>
       </div>
-      <a href="#intro" aria-label="Scroll" className="absolute bottom-6 right-6 z-10 hidden text-[0.62rem] uppercase tracking-[0.3em] text-ivory/60 [writing-mode:vertical-rl] lg:block">
+      <a href="#design" aria-label="Scroll to the design studio" className="absolute bottom-6 right-6 z-10 hidden text-[0.62rem] uppercase tracking-[0.3em] text-ivory/60 [writing-mode:vertical-rl] lg:block">
         Scroll
       </a>
     </section>
