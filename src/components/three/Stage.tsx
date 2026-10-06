@@ -1,68 +1,81 @@
 'use client';
 
-import {ContactShadows, Environment, Lightformer, MeshReflectorMaterial} from '@react-three/drei';
-import {Bloom, EffectComposer, Vignette} from '@react-three/postprocessing';
+import {useEffect, useMemo, useRef} from 'react';
+import {useThree} from '@react-three/fiber';
+import * as THREE from 'three';
+import {ContactShadows, Environment} from '@react-three/drei';
+import {Bloom, EffectComposer, N8AO, ToneMapping, Vignette} from '@react-three/postprocessing';
+import {ToneMappingMode} from 'postprocessing';
+import {tiled, usePBR} from './pbr';
 
-/** Lighting, floor and post FX shared by the hero and the configurator. */
+function Floor() {
+  const parquet = usePBR('herringbone_parquet');
+  const mat = useMemo(() => {
+    const size = 30;
+    const tile = 1.5;
+    const arm = tiled(parquet.arm, size, size, tile);
+    return new THREE.MeshPhysicalMaterial({
+      color: '#d4c3ae',
+      map: tiled(parquet.diff, size, size, tile),
+      normalMap: tiled(parquet.nor, size, size, tile),
+      normalScale: new THREE.Vector2(0.8, 0.8),
+      roughnessMap: arm,
+      roughness: 1,
+      clearcoat: 0.35,
+      clearcoatRoughness: 0.28, // lacquered boards pick up the window
+    });
+  }, [parquet]);
+  return (
+    <mesh rotation-x={-Math.PI / 2} position={[0, 0, -1.5]} receiveShadow material={mat}>
+      <planeGeometry args={[30, 30]} />
+    </mesh>
+  );
+}
+
+/** Photographic lighting (real interior HDRI), parquet floor and a filmic post chain shared by hero + configurator. */
 export function Stage({quality}: {quality: 'high' | 'low'}) {
   const high = quality === 'high';
+  const {size, viewport} = useThree();
+  const composer = useRef<{setSize: (w: number, h: number) => void} | null>(null);
+  // The HDRI loads async; once it lands the composer's buffers can be out of sync with the canvas. Re-sync them.
+  useEffect(() => {
+    const t = [300, 1200, 2500].map((ms) => setTimeout(() => composer.current?.setSize(size.width * viewport.dpr, size.height * viewport.dpr), ms));
+    return () => t.forEach(clearTimeout);
+  }, [size.width, size.height, viewport.dpr]);
   return (
     <>
-      <color attach="background" args={['#0a0b0c']} />
-      <fog attach="fog" args={['#0a0b0c', 9, 19]} />
+      <color attach="background" args={['#0d0e10']} />
+      <fog attach="fog" args={['#0d0e10', 10, 22]} />
 
-      <ambientLight intensity={0.45} />
-      {/* key */}
+      {/* real daylight-through-a-window environment — the main source of realistic reflections */}
+      <Environment files="/3d/hdr/lebombo_1k.hdr" environmentIntensity={1.0} environmentRotation={[0, Math.PI * 0.55, 0]} />
+
+      {/* key: warm, soft, from the front-right (casts the shaker-door shadow lines on high) */}
       <spotLight
-        position={[2.5, 5.2, 3.6]}
-        angle={0.6}
+        position={[2.8, 5, 3.8]}
+        angle={0.55}
         penumbra={1}
-        intensity={high ? 190 : 150}
-        color="#ffe6c8"
+        intensity={high ? 150 : 115}
+        color="#fff1de"
         castShadow={high}
-        shadow-mapSize={[1024, 1024]}
-        shadow-bias={-0.0004}
+        shadow-mapSize={[2048, 2048]}
+        shadow-bias={-0.0003}
+        shadow-radius={5}
         target-position={[0, 0.8, -1]}
       />
-      {/* cool fill from the left, warm kicker from the right */}
-      <directionalLight position={[-4, 3, 3]} intensity={1.1} color="#c3d4ff" />
-      <directionalLight position={[4, 2, 2]} intensity={0.7} color="#ffd9b0" />
-      {/* wash the back wall so the room has depth */}
-      <spotLight position={[0, 3.6, -0.5]} angle={0.9} penumbra={1} intensity={high ? 45 : 38} color="#ffdcae" target-position={[0, 1.4, -3.4]} />
+      <directionalLight position={[-4, 3, 3]} intensity={0.55} color="#d6e2ff" />
+      <ambientLight intensity={0.22} />
+      {/* wash the back wall */}
+      <spotLight position={[0, 3.6, -0.5]} angle={0.9} penumbra={1} intensity={high ? 16 : 12} color="#ffe3c0" target-position={[0, 1.4, -3.4]} />
 
-      {/* procedural studio environment, no network fetch */}
-      <Environment resolution={256} frames={1} environmentIntensity={1.0}>
-        <Lightformer form="rect" intensity={1.4} position={[0, 6, 0]} scale={[10, 10, 1]} rotation-x={Math.PI / 2} color="#fff4e6" />
-        <Lightformer form="rect" intensity={2} position={[-6, 2, 2]} scale={[6, 4, 1]} rotation-y={Math.PI / 2} color="#dfe8ff" />
-        <Lightformer form="rect" intensity={1.5} position={[6, 2, 1]} scale={[6, 4, 1]} rotation-y={-Math.PI / 2} color="#ffe2c0" />
-        <Lightformer form="ring" intensity={2} position={[0, 2.2, 6]} scale={4} color="#ffffff" />
-      </Environment>
+      <Floor />
+      <ContactShadows position={[0, 0.003, -0.5]} opacity={0.6} scale={8} blur={2.6} far={2.4} resolution={512} />
 
-      <mesh rotation-x={-Math.PI / 2} position={[0, 0, -1.5]} receiveShadow>
-        <planeGeometry args={[30, 30]} />
-        {high ? (
-          <MeshReflectorMaterial
-            blur={[300, 80]}
-            resolution={512}
-            mixBlur={1}
-            mixStrength={6}
-            roughness={0.85}
-            depthScale={0.8}
-            minDepthThreshold={0.4}
-            maxDepthThreshold={1.3}
-            color="#2a2b2f"
-            metalness={0.3}
-            mirror={0}
-          />
-        ) : (
-          <meshStandardMaterial color="#303236" roughness={0.45} metalness={0.15} />
-        )}
-      </mesh>
-      <ContactShadows position={[0, 0.002, -0.5]} opacity={0.55} scale={7} blur={2.4} far={2.2} resolution={512} />
-
-      <EffectComposer multisampling={high ? 4 : 0}>
-        <Bloom intensity={0.5} luminanceThreshold={1.15} luminanceSmoothing={0.2} mipmapBlur />
-        <Vignette eskil={false} offset={0.2} darkness={0.75} />
+      <EffectComposer ref={composer as never} multisampling={0} enableNormalPass={false}>
+        {high ? <N8AO aoRadius={0.55} distanceFalloff={0.9} intensity={2.6} quality="medium" halfRes /> : <></>}
+        <Bloom intensity={0.45} luminanceThreshold={1.1} luminanceSmoothing={0.25} mipmapBlur />
+        <ToneMapping mode={ToneMappingMode.NEUTRAL} />
+        <Vignette eskil={false} offset={0.25} darkness={0.7} />
       </EffectComposer>
     </>
   );

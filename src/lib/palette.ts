@@ -1,5 +1,5 @@
 export type Hardware = 'brass' | 'oak' | 'nickel' | 'black';
-export type TopKind = 'marble' | 'slate' | 'oak';
+export type TopKind = 'marble' | 'slate' | 'oak' | 'walnut';
 export type DoorStyle = 'shaker' | 'slab' | 'reeded';
 
 export interface Spec {
@@ -29,8 +29,9 @@ export const HARDWARE: {id: Hardware; name: string; hex: string}[] = [
 
 export const TOPS: {id: TopKind; name: string}[] = [
   {id: 'marble', name: 'Marble-vein quartz'},
-  {id: 'slate', name: 'Dark stone'},
+  {id: 'slate', name: 'Dark marble'},
   {id: 'oak', name: 'Solid oak'},
+  {id: 'walnut', name: 'Solid walnut'},
 ];
 
 export const STYLES: {id: DoorStyle; name: string}[] = [

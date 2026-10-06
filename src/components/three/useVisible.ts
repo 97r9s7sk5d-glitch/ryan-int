@@ -15,7 +15,8 @@ export function useVisible<T extends HTMLElement>() {
   return {ref, visible};
 }
 
-export function useQuality(): 'high' | 'low' {
+/** Starts 'high' only on capable desktops; the scenes call `degrade()` if the frame rate drops. */
+export function useQuality(): ['high' | 'low', () => void] {
   const [q, setQ] = useState<'high' | 'low'>('low');
   useEffect(() => {
     const forced = new URLSearchParams(window.location.search).get('quality');
@@ -23,9 +24,17 @@ export function useQuality(): 'high' | 'low' {
     const coarse = window.matchMedia('(pointer: coarse)').matches;
     const small = window.innerWidth < 900;
     const cores = navigator.hardwareConcurrency || 4;
-    setQ(!coarse && !small && cores >= 4 ? 'high' : 'low');
+    let weakGpu = false;
+    try {
+      const c = document.createElement('canvas');
+      const gl = (c.getContext('webgl2') || c.getContext('webgl')) as WebGLRenderingContext | null;
+      const ext = gl?.getExtension('WEBGL_debug_renderer_info');
+      const name = ext ? String(gl!.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : '';
+      weakGpu = /swiftshader|llvmpipe|software|intel\(r\) (hd|uhd) graphics/i.test(name);
+    } catch {}
+    setQ(!coarse && !small && cores >= 4 && !weakGpu ? 'high' : 'low');
   }, []);
-  return q;
+  return [q, () => setQ('low')];
 }
 
 export function hasWebGL() {

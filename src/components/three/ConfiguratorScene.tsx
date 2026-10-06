@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react';
 import {Canvas} from '@react-three/fiber';
-import {OrbitControls} from '@react-three/drei';
+import {OrbitControls, PerformanceMonitor} from '@react-three/drei';
 import {Kitchen} from './Kitchen';
 import {Stage} from './Stage';
 import {hasWebGL, useQuality, useVisible} from './useVisible';
@@ -10,7 +10,7 @@ import type {Spec} from '@/lib/palette';
 
 export default function ConfiguratorScene({spec}: {spec: Spec}) {
   const {ref, visible} = useVisible<HTMLDivElement>();
-  const quality = useQuality();
+  const [quality, degrade] = useQuality();
   const [ok, setOk] = useState(true);
   useEffect(() => setOk(hasWebGL()), []);
   if (!ok) return <div ref={ref} className="absolute inset-0 grid place-items-center text-muted">3D preview needs WebGL.</div>;
@@ -23,6 +23,7 @@ export default function ConfiguratorScene({spec}: {spec: Spec}) {
         camera={{position: [2.4, 1.5, 3.4], fov: 34, near: 0.1, far: 40}}
         gl={{antialias: false, powerPreference: 'high-performance'}}
       >
+        <PerformanceMonitor onDecline={degrade} flipflops={2} />
         <Stage quality={quality} />
         <Kitchen spec={spec} />
         <OrbitControls

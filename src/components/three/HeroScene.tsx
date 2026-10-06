@@ -1,11 +1,13 @@
 'use client';
 
 import {useEffect, useMemo, useRef, useState} from 'react';
+import {PerformanceMonitor} from '@react-three/drei';
 import {Canvas, useFrame, useThree} from '@react-three/fiber';
 import * as THREE from 'three';
 import {Kitchen} from './Kitchen';
 import {Stage} from './Stage';
 import {hasWebGL, useQuality, useVisible} from './useVisible';
+import {preloadCore} from './pbr';
 import {PAINTS, type Spec} from '@/lib/palette';
 
 const CYCLE = ['Bold Teal', 'Stone', 'Midnight', 'Sage', 'Deep Slate'];
@@ -38,7 +40,7 @@ function Rig({reduced}: {reduced: boolean}) {
 
 export default function HeroScene({onPaint, onReady}: {onPaint?: (name: string) => void; onReady?: () => void}) {
   const {ref, visible} = useVisible<HTMLDivElement>();
-  const quality = useQuality();
+  const [quality, degrade] = useQuality();
   const [i, setI] = useState(0);
   const [ok, setOk] = useState(true);
   const reduced = useMemo(
@@ -55,7 +57,15 @@ export default function HeroScene({onPaint, onReady}: {onPaint?: (name: string) 
   useEffect(() => onPaint?.(SEQUENCE[i].name), [i, onPaint]);
 
   const spec: Spec = {paint: SEQUENCE[i].hex, hardware: 'brass', top: 'marble', style: 'shaker'};
-  const lastRef = useRef(false);
+  const [gl, setGl] = useState(false);
+  const [tex, setTex] = useState(false);
+  useEffect(() => {
+    preloadCore().then(() => setTex(true), () => setTex(true)); // never block the reveal on a failed texture
+  }, []);
+  // reveal the 3D only once the scene AND its scanned materials are ready, so nothing pops in
+  useEffect(() => {
+    if (gl && tex) onReady?.();
+  }, [gl, tex, onReady]);
 
   if (!ok) return <div ref={ref} className="absolute inset-0" />;
   return (
@@ -65,14 +75,10 @@ export default function HeroScene({onPaint, onReady}: {onPaint?: (name: string) 
         dpr={[1, quality === 'high' ? 1.75 : 1.25]}
         frameloop={visible ? 'always' : 'never'}
         camera={{position: [0, 1.45, 5.6], fov: 32, near: 0.1, far: 40}}
-        gl={{antialias: false, powerPreference: 'high-performance', toneMappingExposure: 1.05}}
-        onCreated={() => {
-          if (!lastRef.current) {
-            lastRef.current = true;
-            onReady?.();
-          }
-        }}
+        gl={{antialias: false, powerPreference: 'high-performance'}}
+        onCreated={() => setGl(true)}
       >
+        <PerformanceMonitor onDecline={degrade} flipflops={2} />
         <Stage quality={quality} />
         <Kitchen spec={spec} />
         <Rig reduced={reduced} />
