@@ -5,6 +5,7 @@ import {usePathname} from 'next/navigation';
 import {useEffect, useRef, useState} from 'react';
 import {SITE, tel} from '@/lib/site';
 import {thumb, ROOMS, ROOM_ORDER, type Room} from '@/lib/content';
+import {InstagramIcon} from './InstagramIcon';
 
 const NAVLINK = 'link-u text-[0.72rem] uppercase tracking-[0.24em] transition-colors';
 
@@ -127,6 +128,7 @@ export function Header() {
             <Link href="/gallery" className={`${NAVLINK} hidden sm:block ${path === '/gallery' ? 'text-brass-hi' : ''}`}>Gallery</Link>
             <Link href="/testimonials" className={`${NAVLINK} hidden lg:block ${path === '/testimonials' ? 'text-brass-hi' : ''}`}>Testimonials</Link>
             <Link href="/contact" className={`${NAVLINK} hidden sm:block ${path === '/contact' ? 'text-brass-hi' : ''}`}>Contact</Link>
+            <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" aria-label="Ryan McGinty Interiors on Instagram" className="hidden text-ivory/80 transition-colors hover:text-brass-hi lg:block"><InstagramIcon className="h-[1.1rem] w-[1.1rem]" /></a>
             <button
               onClick={() => setOpen((o) => !o)}
               aria-expanded={open}

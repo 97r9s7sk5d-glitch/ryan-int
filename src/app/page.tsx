@@ -6,8 +6,11 @@ import {Configurator} from '@/components/Configurator';
 import {Process} from '@/components/Process';
 import {Featured} from '@/components/Featured';
 import {Testimonials} from '@/components/Testimonials';
+import {InstagramSection} from '@/components/InstagramSection';
 import {CtaBand} from '@/components/CtaBand';
 import {roomImages} from '@/lib/content';
+
+export const revalidate = 3600; // refresh the Instagram feed hourly when it is connected
 
 export default function Home() {
   return (
@@ -20,6 +23,7 @@ export default function Home() {
       <Process />
       <Featured />
       <Testimonials />
+      <InstagramSection />
       <CtaBand />
     </>
   );
