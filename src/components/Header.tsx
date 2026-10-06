@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {SITE, tel} from '@/lib/site';
-import {thumb, ROOMS, type Room} from '@/lib/content';
+import {thumb, ROOMS, ROOM_ORDER, type Room} from '@/lib/content';
+
+const NAVLINK = 'link-u text-[0.72rem] uppercase tracking-[0.24em] transition-colors';
 
 const MENU = [
   {href: '/', label: 'Home'},
@@ -25,6 +27,23 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [solid, setSolid] = useState(false);
   const [hover, setHover] = useState<Room | null>(null);
+  const [svc, setSvc] = useState(false);
+  const svcRef = useRef<HTMLDivElement>(null);
+  const isServices = path === '/services' || ROOM_ORDER.some((r) => path === `/${r}`);
+
+  // close the Services dropdown on navigation, outside click or Escape
+  useEffect(() => setSvc(false), [path]);
+  useEffect(() => {
+    if (!svc) return;
+    const away = (e: Event) => !svcRef.current?.contains(e.target as Node) && setSvc(false);
+    const esc = (e: KeyboardEvent) => e.key === 'Escape' && setSvc(false);
+    document.addEventListener('pointerdown', away);
+    window.addEventListener('keydown', esc);
+    return () => {
+      document.removeEventListener('pointerdown', away);
+      window.removeEventListener('keydown', esc);
+    };
+  }, [svc]);
 
   useEffect(() => {
     const on = () => setSolid(window.scrollY > 40);
@@ -55,11 +74,59 @@ export function Header() {
           <Link href="/" aria-label={`${SITE.name} — home`} className="relative z-[90] flex items-center gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/rm-mark-white.png" alt="RM" className="h-9 w-auto sm:h-11" width={600} height={333} />
-            <span className="hidden text-[0.68rem] uppercase tracking-[0.34em] text-ivory/80 md:block">Ryan McGinty<br />Interiors</span>
+            <span className="hidden text-[0.68rem] uppercase tracking-[0.34em] text-ivory/80 md:block lg:hidden xl:block">Ryan McGinty<br />Interiors</span>
           </Link>
-          <nav className="relative z-[90] flex items-center gap-7">
-            <Link href="/gallery" className="link-u hidden text-[0.72rem] uppercase tracking-[0.24em] sm:block">Gallery</Link>
-            <Link href="/contact" className="link-u hidden text-[0.72rem] uppercase tracking-[0.24em] sm:block">Contact</Link>
+          <nav className="relative z-[90] flex items-center gap-6 xl:gap-8">
+            <Link href="/" className={`${NAVLINK} hidden lg:block ${path === '/' ? 'text-brass-hi' : ''}`}>Home</Link>
+
+            {/* Services — drops down the five rooms */}
+            <div
+              ref={svcRef}
+              className="relative hidden lg:block"
+              onMouseEnter={() => setSvc(true)}
+              onMouseLeave={() => setSvc(false)}
+            >
+              <button
+                onClick={() => setSvc((s) => !s)}
+                aria-expanded={svc}
+                aria-haspopup="true"
+                className={`${NAVLINK} flex items-center gap-2 ${isServices ? 'text-brass-hi' : ''}`}
+              >
+                Services
+                <svg width="9" height="6" viewBox="0 0 9 6" aria-hidden className={`transition-transform duration-500 ${svc ? 'rotate-180' : ''}`}>
+                  <path d="M1 1l3.5 3.5L8 1" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                </svg>
+              </button>
+              <div
+                className={`absolute left-1/2 top-full w-[23rem] -translate-x-1/2 pt-6 transition-all duration-500 ease-[var(--ease-lux)] ${
+                  svc ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
+                }`}
+              >
+                <ul className="border border-line bg-ink/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
+                  <li>
+                    <Link href="/services" tabIndex={svc ? 0 : -1} className="group flex items-center justify-between px-5 py-4 text-[0.7rem] uppercase tracking-[0.24em] text-brass-hi hover:bg-white/5">
+                      All services <span className="transition-transform duration-500 group-hover:translate-x-1">→</span>
+                    </Link>
+                  </li>
+                  {ROOM_ORDER.map((r) => (
+                    <li key={r} className="border-t border-line">
+                      <Link
+                        href={`/${r}`}
+                        tabIndex={svc ? 0 : -1}
+                        className={`group block px-5 py-4 transition-colors hover:bg-white/5 ${path === `/${r}` ? 'bg-white/5' : ''}`}
+                      >
+                        <span className="display block text-2xl leading-tight transition-colors group-hover:text-brass-hi">{ROOMS[r].title}</span>
+                        <span className="mt-0.5 block text-xs text-muted">{ROOMS[r].tagline}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <Link href="/gallery" className={`${NAVLINK} hidden sm:block ${path === '/gallery' ? 'text-brass-hi' : ''}`}>Gallery</Link>
+            <Link href="/testimonials" className={`${NAVLINK} hidden lg:block ${path === '/testimonials' ? 'text-brass-hi' : ''}`}>Testimonials</Link>
+            <Link href="/contact" className={`${NAVLINK} hidden sm:block ${path === '/contact' ? 'text-brass-hi' : ''}`}>Contact</Link>
             <button
               onClick={() => setOpen((o) => !o)}
               aria-expanded={open}
