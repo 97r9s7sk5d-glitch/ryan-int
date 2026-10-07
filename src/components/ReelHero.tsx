@@ -144,9 +144,8 @@ export function ReelHero() {
       <div className="wrap flex flex-col items-center justify-between gap-6 py-8 sm:flex-row">
         <p className="eyebrow text-center sm:text-left">Bespoke kitchens · Bedrooms · Libraries · Furniture</p>
         <div className="flex flex-wrap justify-center gap-4">
-          <Link href="/gallery" className="btn btn-solid">View our work</Link>
-          <a href="#design" className="btn">Design yours</a>
-          <Link href="/contact" className="btn max-sm:hidden">Request a quote</Link>
+          <Link href="/contact" className="btn btn-solid">Request a quote</Link>
+          <Link href="/gallery" className="link-u self-center py-3 text-[0.74rem] uppercase tracking-[0.24em]">View our work →</Link>
         </div>
       </div>
     </section>

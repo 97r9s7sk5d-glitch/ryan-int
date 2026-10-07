@@ -6,27 +6,28 @@ import {Footer} from '@/components/Footer';
 import {SmoothScroll} from '@/components/SmoothScroll';
 import {ScrollEffects} from '@/components/ScrollEffects';
 import {ScrollProgress} from '@/components/ScrollProgress';
+import {Consent} from '@/components/Consent';
 import {SITE} from '@/lib/site';
 
 const description =
-  'Bespoke handmade kitchens, bedrooms, bathrooms, libraries and furniture, designed, built and fitted by Ryan McGinty and his team. Workshop in Malton, North Yorkshire, working in homes from Yorkshire to London.';
+  'Bespoke handmade kitchens, bedrooms, bathrooms, libraries and furniture, designed, built and fitted from our Malton workshop. Serving Yorkshire to London.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: {default: 'Ryan McGinty Interiors — Bespoke handmade kitchens, bedrooms & furniture', template: '%s | Ryan McGinty Interiors'},
+  title: {default: 'Ryan McGinty Interiors | Bespoke Kitchens & Furniture, Yorkshire', template: '%s | Ryan McGinty Interiors'},
   description,
   alternates: {canonical: '/'},
   openGraph: {
     type: 'website',
     siteName: SITE.name,
-    title: 'Ryan McGinty Interiors — Bespoke, beautiful craftsmanship',
-    description,
-    url: SITE.url,
     locale: 'en_GB',
-    images: [{url: '/og.jpg', width: 1200, height: 630}],
+    images: [{url: '/og.jpg', width: 1200, height: 630, alt: 'Ryan McGinty Interiors: bespoke handmade kitchens, bedrooms and furniture'}],
   },
   twitter: {card: 'summary_large_image', images: ['/og.jpg']},
-  icons: {icon: '/icon.png', apple: '/icon.png'},
+  icons: {
+    icon: [{url: '/favicon.ico', sizes: '48x48'}, {url: '/icon.png', type: 'image/png', sizes: '512x512'}],
+    apple: [{url: '/apple-touch-icon.png', sizes: '180x180'}],
+  },
 };
 
 export const viewport: Viewport = {themeColor: '#0a0b0c', width: 'device-width', initialScale: 1};
@@ -82,6 +83,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
           </Suspense>
         </main>
         <Footer />
+        <Consent />
       </body>
     </html>
   );

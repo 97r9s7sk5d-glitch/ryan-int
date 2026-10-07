@@ -127,13 +127,16 @@ export function Header() {
 
             <Link href="/gallery" className={`${NAVLINK} hidden sm:block ${path === '/gallery' ? 'text-brass-hi' : ''}`}>Gallery</Link>
             <Link href="/testimonials" className={`${NAVLINK} hidden lg:block ${path === '/testimonials' ? 'text-brass-hi' : ''}`}>Testimonials</Link>
-            <Link href="/contact" className={`${NAVLINK} hidden sm:block ${path === '/contact' ? 'text-brass-hi' : ''}`}>Contact</Link>
+            {/* the one primary action, always in reach */}
+            <Link href="/contact" className="hidden border border-brass px-5 py-2.5 text-[0.7rem] uppercase tracking-[0.22em] text-ivory transition-colors hover:bg-brass hover:text-ink sm:block">
+              Request a quote
+            </Link>
             <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" aria-label="Ryan McGinty Interiors on Instagram" className="hidden text-ivory/80 transition-colors hover:text-brass-hi lg:block"><InstagramIcon className="h-[1.1rem] w-[1.1rem]" /></a>
             <button
               onClick={() => setOpen((o) => !o)}
               aria-expanded={open}
               aria-label={open ? 'Close menu' : 'Open menu'}
-              className="group flex items-center gap-3 text-[0.72rem] uppercase tracking-[0.24em]"
+              className="group -my-3 flex items-center gap-3 py-3 text-[0.72rem] uppercase tracking-[0.24em]"
             >
               <span>{open ? 'Close' : 'Menu'}</span>
               <span className="relative block h-3 w-8">

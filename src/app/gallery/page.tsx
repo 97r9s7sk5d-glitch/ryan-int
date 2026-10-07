@@ -1,4 +1,5 @@
 import type {Metadata} from 'next';
+import {Suspense} from 'react';
 import {PageHero} from '@/components/PageHero';
 import {Gallery} from '@/components/Gallery';
 import {CtaBand} from '@/components/CtaBand';
@@ -17,7 +18,7 @@ export default function GalleryPage() {
         <p>Five chapters, {GALLERY.length} photographs: kitchens, bedrooms, bathrooms, studies and furniture, made by hand in Malton and fitted in homes from Yorkshire to London.</p>
       </PageHero>
       <section className="bg-ink pb-28">
-        <div className="wrap"><Gallery /></div>
+        <div className="wrap"><Suspense fallback={<div className="min-h-[60svh]" />}><Gallery /></Suspense></div>
       </section>
       <CtaBand />
     </>

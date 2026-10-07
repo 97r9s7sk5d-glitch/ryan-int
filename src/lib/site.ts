@@ -13,8 +13,6 @@ export const SITE = {
     region: 'North Yorkshire',
     postcode: 'YO17 6BT',
   },
-  // Set to a Formspree / Netlify Forms / own endpoint to send enquiries from the site. Falls back to mailto.
-  formEndpoint: process.env.NEXT_PUBLIC_FORM_ENDPOINT ?? '',
 };
 
 export const tel = (n: string) => 'tel:' + n.replace(/\s/g, '');

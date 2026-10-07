@@ -1,4 +1,5 @@
 import type {Metadata} from 'next';
+import {Suspense} from 'react';
 import {PageHero} from '@/components/PageHero';
 import {ContactForm} from '@/components/ContactForm';
 import {SITE, tel} from '@/lib/site';
@@ -19,7 +20,7 @@ export default function Contact() {
       </PageHero>
       <section className="bg-ink pb-28">
         <div className="wrap grid gap-16 lg:grid-cols-[1.4fr_1fr] lg:gap-24">
-          <ContactForm />
+          <Suspense fallback={<div className="min-h-[36rem]" />}><ContactForm /></Suspense>
           <aside className="space-y-10 lg:pt-2">
             <div>
               <p className="eyebrow mb-3">Workshop &amp; showroom</p>

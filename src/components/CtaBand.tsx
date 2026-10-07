@@ -13,8 +13,8 @@ export function CtaBand() {
           </h2>
         </Reveal>
         <Reveal delay={0.1} className="mt-12 flex flex-wrap items-center justify-center gap-5">
-          <Link href="/contact" className="btn btn-solid">Start a conversation</Link>
-          <a href={tel(SITE.mobile)} className="btn">Call {SITE.mobile}</a>
+          <Link href="/contact" className="btn btn-solid">Request a quote</Link>
+          <a href={tel(SITE.mobile)} className="link-u py-3 text-[0.74rem] uppercase tracking-[0.24em]">or call {SITE.mobile}</a>
         </Reveal>
       </div>
     </section>

@@ -48,8 +48,8 @@ export function Hero({poster}: {poster: string}) {
           <div data-fade className="max-w-md">
             <p className="text-lg text-ivory/85">Hand-painted shaker, marble and oak, watch the room change, then design your own below.</p>
             <div className="pointer-events-auto mt-7 flex flex-wrap gap-4">
-              <a href="#design" className="btn btn-solid">Design yours</a>
-              <Link href="/gallery" className="btn">View our work</Link>
+              <Link href="/contact" className="btn btn-solid">Request a quote</Link>
+              <a href="#design" className="link-u self-center py-3 text-[0.74rem] uppercase tracking-[0.24em]">Design yours ↓</a>
             </div>
           </div>
           <div data-fade className="hidden items-center gap-5 text-[0.68rem] uppercase tracking-[0.28em] text-ivory/70 sm:flex">

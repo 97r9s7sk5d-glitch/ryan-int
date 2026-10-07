@@ -45,7 +45,7 @@ body {
 @media (min-width: 1024px) { .wrap { width: min(100% - 6rem, 90rem); } }
 
 .paper { background: var(--color-ivory); color: #17181a; }
-.paper .eyebrow { color: #8a6a37; }
+.paper .eyebrow { color: #6f531f; }
 .paper .muted { color: #6b665c; }
 
 /* Buttons */
@@ -106,3 +106,6 @@ html[data-intro='1'] .intro-skip { display: block; }
 /* failsafe: if scripts never finish the intro, hand the page back after 20s */
 @keyframes introReleaseHtml { to { overflow: auto; } }
 @keyframes introReleaseStage { to { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: auto; } }
+
+/* the cookie notice waits until the opening film has finished */
+html[data-intro='1'] #consent { display: none; }

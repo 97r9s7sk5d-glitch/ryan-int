@@ -116,9 +116,9 @@ export function Gallery() {
                 onClick={() => lenisTo(document.getElementById(`chapter-${c.room}`)!)}
                 className={`group flex items-baseline gap-3 whitespace-nowrap px-4 py-3 text-[0.7rem] uppercase tracking-[0.22em] transition-colors duration-500 ${active === c.room ? 'text-brass-hi' : 'text-ivory/60 hover:text-ivory'}`}
               >
-                <span className="text-[0.6rem] opacity-60">0{i + 1}</span>
+                <span className="text-[0.68rem] opacity-80">0{i + 1}</span>
                 {c.room === 'studies' ? 'Studies' : ROOMS[c.room].title}
-                <span className="text-[0.6rem] opacity-50">{c.items.length}</span>
+                <span className="text-[0.68rem] opacity-70">{c.items.length}</span>
                 <span className={`absolute -mb-9 h-px bg-brass transition-all duration-700 ${active === c.room ? 'w-8' : 'w-0'}`} />
               </button>
             </li>
@@ -219,11 +219,11 @@ function Tile({item, i, onOpen}: {item: Item; i: number; onOpen: () => void}) {
       <span className="absolute inset-x-0 bottom-0 translate-y-2 p-3 text-left opacity-0 transition-all duration-700 group-hover:translate-y-0 group-hover:opacity-100 max-md:translate-y-0 max-md:opacity-100 sm:p-4">
         {cap ? (
           <>
-            <span className="block text-[0.58rem] uppercase tracking-[0.24em] text-brass-hi">{cap.place}</span>
+            <span className="block text-[0.66rem] uppercase tracking-[0.24em] text-brass-hi">{cap.place}</span>
             <span className="display block text-lg leading-tight sm:text-xl">{cap.title}</span>
           </>
         ) : (
-          <span className="block text-[0.58rem] uppercase tracking-[0.24em] text-ivory/80">{ROOMS[item.room].title}</span>
+          <span className="block text-[0.66rem] uppercase tracking-[0.24em] text-ivory/80">{ROOMS[item.room].title}</span>
         )}
       </span>
     </button>
@@ -292,7 +292,7 @@ function Lightbox({items, room, i, onStep, onPick, onClose}: {items: Item[]; roo
           <div>
             {cap ? (
               <>
-                <p className="text-[0.62rem] uppercase tracking-[0.26em] text-brass-hi">{cap.place}</p>
+                <p className="text-[0.68rem] uppercase tracking-[0.26em] text-brass-hi">{cap.place}</p>
                 <p className="display text-2xl sm:text-3xl">{cap.title}</p>
               </>
             ) : (

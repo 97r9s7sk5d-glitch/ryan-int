@@ -6,6 +6,13 @@ import {ParallaxImage, Reveal} from '@/components/Reveal';
 import {CtaBand} from '@/components/CtaBand';
 import {ROOMS, ROOM_ORDER, full, thumb, type Room} from '@/lib/content';
 
+/** trim to a search-result-sized description, ending on a whole word */
+const blurb = (t: string, max = 158) => {
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max - 1);
+  return cut.slice(0, cut.lastIndexOf(' ')).replace(/[,;:.\s]+$/, '') + '…';
+};
+
 export const dynamicParams = false;
 export const generateStaticParams = () => ROOM_ORDER.map((room) => ({room}));
 
@@ -15,9 +22,9 @@ export async function generateMetadata({params}: {params: Promise<{room: string}
   if (!r) return {};
   return {
     title: `Bespoke ${r.title.toLowerCase()}`,
-    description: `${r.intro} ${r.lead}`.slice(0, 300),
+    description: blurb(`${r.intro} ${r.lead}`),
     alternates: {canonical: `/${r.slug}`},
-    openGraph: {images: [full(r.hero)]},
+    openGraph: {images: [{url: full(r.hero), alt: `${r.singular} by Ryan McGinty Interiors`}]},
   };
 }
 

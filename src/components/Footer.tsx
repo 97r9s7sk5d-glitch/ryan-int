@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import {SITE, tel} from '@/lib/site';
+import {CookieSettingsLink} from './Consent';
 
 export function Footer() {
   const a = SITE.address;
@@ -25,17 +26,17 @@ export function Footer() {
           <div>
             <p className="eyebrow mb-5">Speak to Ryan</p>
             <ul className="space-y-1 text-sm text-ivory/75">
-              <li><a className="link-u" href={tel(SITE.phone)}>{SITE.phone}</a></li>
-              <li><a className="link-u" href={tel(SITE.mobile)}>{SITE.mobile}</a></li>
-              <li><a className="link-u" href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
-              <li><a className="link-u" href={SITE.instagram} target="_blank" rel="noopener noreferrer">Instagram</a></li>
+              <li><a className="link-u inline-block py-1" href={tel(SITE.phone)}>{SITE.phone}</a></li>
+              <li><a className="link-u inline-block py-1" href={tel(SITE.mobile)}>{SITE.mobile}</a></li>
+              <li><a className="link-u inline-block py-1" href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
+              <li><a className="link-u inline-block py-1" href={SITE.instagram} target="_blank" rel="noopener noreferrer">Instagram</a></li>
             </ul>
           </div>
           <div>
             <p className="eyebrow mb-5">Explore</p>
             <ul className="space-y-1 text-sm text-ivory/75">
-              {[['Kitchens', '/kitchens'], ['Bedrooms', '/bedrooms'], ['Bathrooms', '/bathrooms'], ['Studies & Libraries', '/studies'], ['Furniture', '/furniture'], ['Gallery', '/gallery'], ['About', '/about']].map(([l, h]) => (
-                <li key={h}><Link className="link-u" href={h}>{l}</Link></li>
+              {[['Kitchens', '/kitchens'], ['Bedrooms', '/bedrooms'], ['Bathrooms', '/bathrooms'], ['Studies & Libraries', '/studies'], ['Furniture', '/furniture'], ['Gallery', '/gallery'], ['About', '/about'], ['Testimonials', '/testimonials'], ['Contact', '/contact']].map(([l, h]) => (
+                <li key={h}><Link className="link-u inline-block py-1" href={h}>{l}</Link></li>
               ))}
             </ul>
           </div>
@@ -43,7 +44,11 @@ export function Footer() {
         <div className="mt-24 flex flex-col justify-between gap-3 border-t border-line pt-6 text-xs text-muted sm:flex-row">
           <p>© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
           <p>Bespoke handmade kitchens, bedrooms &amp; furniture · Yorkshire to London</p>
-          <Link href="/privacy" className="link-u">Privacy policy</Link>
+          <p className="flex flex-wrap gap-x-5 gap-y-1">
+            <Link href="/privacy" className="link-u inline-block py-1">Privacy policy</Link>
+            <Link href="/terms" className="link-u inline-block py-1">Terms &amp; conditions</Link>
+            <CookieSettingsLink className="link-u py-1" />
+          </p>
         </div>
       </div>
     </footer>
