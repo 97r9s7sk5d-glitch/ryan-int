@@ -116,9 +116,9 @@ export function Gallery() {
                 onClick={() => lenisTo(document.getElementById(`chapter-${c.room}`)!)}
                 className={`group flex items-baseline gap-3 whitespace-nowrap px-4 py-3 text-[0.7rem] uppercase tracking-[0.22em] transition-colors duration-500 ${active === c.room ? 'text-brass-hi' : 'text-ivory/60 hover:text-ivory'}`}
               >
-                <span className="text-[0.68rem] opacity-80">0{i + 1}</span>
+                <span className="text-[0.68rem] opacity-95">0{i + 1}</span>
                 {c.room === 'studies' ? 'Studies' : ROOMS[c.room].title}
-                <span className="text-[0.68rem] opacity-70">{c.items.length}</span>
+                <span className="text-[0.68rem] opacity-95">{c.items.length}</span>
                 <span className={`absolute -mb-9 h-px bg-brass transition-all duration-700 ${active === c.room ? 'w-8' : 'w-0'}`} />
               </button>
             </li>

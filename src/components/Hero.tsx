@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {useEffect, useRef, useState} from 'react';
 import gsap from 'gsap';
 import {full} from '@/lib/content';
+import {useNear} from './three/useVisible';
 
 const HeroScene = dynamic(() => import('./three/HeroScene'), {ssr: false});
 
@@ -12,6 +13,7 @@ export function Hero({poster}: {poster: string}) {
   const [paint, setPaint] = useState('Bold Teal');
   const [ready, setReady] = useState(false);
   const root = useRef<HTMLDivElement>(null);
+  const {ref: sceneSlot, near} = useNear<HTMLDivElement>();
 
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -32,8 +34,8 @@ export function Hero({poster}: {poster: string}) {
         className={`absolute inset-0 h-full w-full object-cover grade transition-opacity duration-[1600ms] ${ready ? 'opacity-0' : 'opacity-60'}`}
         fetchPriority="high"
       />
-      <div className={`absolute inset-0 transition-opacity duration-[1600ms] ${ready ? 'opacity-100' : 'opacity-0'}`}>
-        <HeroScene onPaint={setPaint} onReady={() => setReady(true)} />
+      <div ref={sceneSlot} className={`absolute inset-0 transition-opacity duration-[1600ms] ${ready ? 'opacity-100' : 'opacity-0'}`}>
+        {near && <HeroScene onPaint={setPaint} onReady={() => setReady(true)} />}
       </div>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_40%,rgb(10_11_12/0.1),rgb(10_11_12/0.65)_75%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink via-ink/60 to-transparent" />

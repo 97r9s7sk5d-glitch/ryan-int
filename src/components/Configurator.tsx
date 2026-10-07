@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {useState} from 'react';
 import {DEFAULT_SPEC, HARDWARE, PAINTS, STYLES, TOPS, paintName, type Spec} from '@/lib/palette';
 import {Reveal} from './Reveal';
+import {useNear} from './three/useVisible';
 
 const Scene = dynamic(() => import('./three/ConfiguratorScene'), {ssr: false});
 
@@ -23,6 +24,7 @@ const chip = (on: boolean) =>
   }`;
 
 export function Configurator() {
+  const {ref: sceneSlot, near} = useNear<HTMLDivElement>();
   const [spec, setSpec] = useState<Spec>(DEFAULT_SPEC);
   const set = <K extends keyof Spec>(k: K, v: Spec[K]) => setSpec((s) => ({...s, [k]: v}));
   const hw = HARDWARE.find((h) => h.id === spec.hardware)!;
@@ -51,8 +53,8 @@ export function Configurator() {
         </div>
 
         <div className="grid gap-px overflow-hidden border border-line bg-line lg:grid-cols-[1.7fr_1fr]">
-          <div className="relative aspect-[4/3] min-h-[360px] bg-ink lg:aspect-auto lg:min-h-[640px]">
-            <Scene spec={spec} />
+          <div ref={sceneSlot} className="relative aspect-[4/3] min-h-[360px] bg-ink lg:aspect-auto lg:min-h-[640px]">
+            {near && <Scene spec={spec} />}
             <div className="pointer-events-none absolute left-5 top-5 text-[0.65rem] uppercase tracking-[0.28em] text-muted">
               Drag to turn · Scroll to zoom
             </div>
