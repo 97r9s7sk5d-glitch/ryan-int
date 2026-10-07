@@ -36,7 +36,10 @@ export function ReelHero() {
     const html = document.documentElement;
     if (!el || !v) return;
     // after a client-side navigation the inline script does not run; start the reel here instead
-    (new Function(`(${PICK})(arguments[0],null)`) as (v: HTMLVideoElement) => void)(v);
+    const boot = document.createElement('script');
+    boot.textContent = `(${PICK})(document.getElementById('reel-hero'),null)`;
+    document.head.appendChild(boot);
+    boot.remove();
 
     const sync = () => setPaused(v.paused && html.dataset.intro !== '1');
     v.addEventListener('play', sync);

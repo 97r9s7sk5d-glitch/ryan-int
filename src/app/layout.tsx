@@ -63,7 +63,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         <script dangerouslySetInnerHTML={{__html: "try{if(location.pathname==='/'&&!sessionStorage.getItem('rm-intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.setAttribute('data-intro','1')}catch(e){}"}} />
       </head>
       <body className="grain">
-        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd)}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(jsonLd).replace(/</g, '\\u003c')}} />
         <SmoothScroll />
         <ScrollProgress />
         <aside aria-label="Website credit" className="pointer-events-none absolute inset-x-0 top-0 z-[85]">

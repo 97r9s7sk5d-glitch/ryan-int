@@ -24,15 +24,17 @@ function limited(ip: string) {
 const json = (body: object, status = 200) => NextResponse.json(body, {status, headers: {'Cache-Control': 'no-store'}});
 
 export async function POST(req: Request) {
-  // same-origin only
-  const origin = req.headers.get('origin');
-  if (origin) {
-    try {
-      if (new URL(origin).host !== req.headers.get('host')) return json({error: 'forbidden'}, 403);
-    } catch {
-      return json({error: 'forbidden'}, 403);
-    }
+  // CSRF / cross-site abuse: browsers always send Origin on a fetch POST, and it must be this site.
+  // (There are no cookies or sessions to ride on, and JSON bodies can't be sent cross-site without a preflight we never grant.)
+  try {
+    if (new URL(req.headers.get('origin') ?? '').host !== req.headers.get('host')) return json({error: 'forbidden'}, 403);
+  } catch {
+    return json({error: 'forbidden'}, 403);
   }
+  const site = req.headers.get('sec-fetch-site');
+  if (site && site !== 'same-origin') return json({error: 'forbidden'}, 403);
+  if (!(req.headers.get('content-type') ?? '').toLowerCase().startsWith('application/json')) return json({error: 'unsupported'}, 415);
+  if (Number(req.headers.get('content-length') ?? 0) > 12_000) return json({error: 'too_large'}, 413);
 
   const raw = await req.text();
   if (raw.length > 12_000) return json({error: 'too_large'}, 413);
@@ -47,13 +49,18 @@ export async function POST(req: Request) {
   const elapsed = Date.now() - Number(body.t);
   if (body.website || !Number.isFinite(elapsed) || elapsed < 3000) return json({ok: true});
 
-  const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
+  const ip = req.headers.get('x-real-ip') || (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
   if (limited(ip)) return json({error: 'rate_limited'}, 429);
 
   const errors = validateEnquiry(body as Partial<Enquiry>);
   if (Object.keys(errors).length) return json({errors}, 422);
 
-  const d = Object.fromEntries(['first', 'last', 'email', 'phone', 'type', 'message', 'spec'].map((k) => [k, String(body[k] ?? '').trim()])) as unknown as Enquiry;
+  // plain text only: drop control characters (keeping line breaks in the message) so nothing can inject headers or odd formatting
+  const clean = (v: unknown, multiline = false) =>
+    String(v ?? '')
+      .replace(multiline ? /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g : /[\u0000-\u001F\u007F]/g, ' ')
+      .trim();
+  const d = Object.fromEntries(['first', 'last', 'email', 'phone', 'type', 'message', 'spec'].map((k) => [k, clean(body[k], k === 'message')])) as unknown as Enquiry;
   const subject = `Website enquiry — ${d.type} — ${d.first} ${d.last}`;
   const text = [
     `Name: ${d.first} ${d.last}`,
@@ -72,6 +79,7 @@ export async function POST(req: Request) {
       const r = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {Authorization: `Bearer ${key}`, 'Content-Type': 'application/json'},
+        signal: AbortSignal.timeout(8000),
         body: JSON.stringify({
           from: process.env.ENQUIRY_FROM ?? `${SITE.name} <onboarding@resend.dev>`,
           to: [process.env.ENQUIRY_TO ?? SITE.email],
@@ -83,7 +91,10 @@ export async function POST(req: Request) {
       return r.ok ? json({ok: true}) : json({error: 'delivery_failed'}, 502);
     }
     if (endpoint) {
+      // destination comes from our own environment, never from the visitor; still insist on https
+      if (!/^https:\/\//.test(endpoint)) return json({error: 'not_configured'}, 503);
       const r = await fetch(endpoint, {
+        signal: AbortSignal.timeout(8000),
         method: 'POST',
         headers: {'Content-Type': 'application/json', Accept: 'application/json'},
         body: JSON.stringify({...d, _subject: subject, _replyto: d.email}),

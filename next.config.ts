@@ -1,9 +1,30 @@
 import type {NextConfig} from 'next';
 
+// Locks down what the browser may load or do. Inline scripts stay allowed because Next.js and the instant-start video
+// rely on them (nonces would force every page to render per request); everything else is closed off.
+const csp = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https:",
+  "media-src 'self' blob: data:",
+  "font-src 'self' data:",
+  "connect-src 'self'",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "object-src 'none'",
+  "frame-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+  'upgrade-insecure-requests',
+].join('; ');
+
 // Old Duda URLs → new structure, so existing links, Instagram bio and Google results keep working.
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  productionBrowserSourceMaps: false, // never publish the readable source
   async headers() {
     const cache = (s: string) => ({key: 'Cache-Control', value: `public, max-age=${s}, stale-while-revalidate=2592000`});
     return [
@@ -15,6 +36,9 @@ const nextConfig: NextConfig = {
           {key: 'X-Content-Type-Options', value: 'nosniff'},
           {key: 'X-Frame-Options', value: 'SAMEORIGIN'},
           {key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin'},
+          {key: 'Cross-Origin-Opener-Policy', value: 'same-origin'},
+          {key: 'X-Permitted-Cross-Domain-Policies', value: 'none'},
+          ...(process.env.NODE_ENV === 'production' ? [{key: 'Content-Security-Policy', value: csp}] : []),
           {key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'},
         ],
       },
